@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Evaluasi Tabayyun-Based Classroom Assessment (T-BCA)</title>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --accent: #2b6cb0;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --success: #38a169;
+            --warning: #dd6b20;
+            --danger: #e53e3e;
+            --tabayyun: #2c7a7b;
+            --purple: #6b46c1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a365d, #2c7a7b);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        header h1 { margin: 0 0 5px 0; font-size: 1.7rem; }
+        header p { margin: 0; opacity: 0.9; font-size: 0.9rem; }
+
+        .landing-page {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .hero-banner {
+            text-align: center;
+            padding: 20px 10px 30px 10px;
+            border-bottom: 2px dashed #e2e8f0;
+            margin-bottom: 25px;
+        }
+
+        .btn-enter {
+            background: linear-gradient(135deg, #2c7a7b, #1a365d);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            margin-top: 15px;
+        }
+
+        .btn-enter:hover { transform: translateY(-3px); }
+
+        .tab-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #cbd5e0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 15px;
+            font-size: 0.88rem;
+            font-weight: bold;
+            border: none;
+            background: #e2e8f0;
+            color: #4a5568;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .tab-btn:hover { background: #cbd5e0; color: var(--primary); }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+        }
+
+        .window-content { display: none; }
+        .window-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .meta-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid var(--tabayyun);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: var(--primary);
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+            margin-top: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .generator-box {
+            background: var(--card-bg);
+            border: 2px dashed var(--tabayyun);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #2c7a7b, #1a365d);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        .btn-action:hover { transform: translateY(-2px); }
+        .btn-download { background: linear-gradient(135deg, #2f855a, #22543d); }
+        .btn-reset { background: linear-gradient(135deg, #c53030, #742a2a); }
+        .btn-timer { background: #4a5568; font-size: 0.85rem; padding: 6px 12px; }
+        .btn-small { padding: 6px 12px; font-size: 0.85rem; }
+
+        select, input[type="text"], input[type="number"], textarea {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e0;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        .timer-display {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary);
+            background: #edf2f7;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .question-display {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e6fffa;
+            border-radius: 8px;
+            border-left: 4px solid var(--tabayyun);
+            text-align: left;
+            min-height: 70px;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-top: 5px;
+        }
+
+        .badge-level {
+            background: var(--tabayyun);
+            color: white;
+            font-size: 0.78rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .history-box, .custom-q-box {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        .history-list {
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 0.88rem;
+            padding-left: 20px;
+            margin: 10px 0 0 0;
+        }
+
+        .calculator {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th { background-color: #e6fffa; color: var(--primary); }
+
+        .rubric-hint {
+            display: block;
+            font-size: 0.78rem;
+            color: #718096;
+            margin-top: 2px;
+        }
+
+        .score-summary {
+            background: #edf2f7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .progress-container {
+            background: #cbd5e0;
+            border-radius: 10px;
+            height: 18px;
+            width: 100%;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            background: var(--accent);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .result-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .predicate-badge {
+            padding: 4px 12px;
+            border-radius: 6px;
+            color: white;
+            background: #a0aec0;
+            font-size: 0.95rem;
+        }
+
+        .action-container {
+            text-align: center;
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        @media print {
+            body { background: white; color: black; padding: 0; }
+            .no-print, button, select, .tab-nav, .landing-page { display: none !important; }
+            .window-content { display: block !important; }
+            .generator-box { border: 1px solid #ccc; text-align: left; }
+            input, textarea { border: none !important; background: transparent !important; padding: 0 !important; }
+            header { background: none; color: black; border-bottom: 2px solid black; padding: 0 0 10px 0; }
+            .meta-card { border: none; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Model Tabayyun-Based Classroom Assessment (T-BCA)</h1>
+        <p>Aplikasi Penilaian Berbasis Proses untuk Penyeimbang AI & Benteng Nalar Kritis Mahasiswa</p>
+    </header>
+
+    <!-- LANDING PAGE -->
+    <div id="landing-view" class="landing-page">
+        <div class="hero-banner">
+            <h2 style="color: var(--primary); margin-bottom: 10px;">Selamat Datang di Portal Evaluasi T-BCA</h2>
+            <p style="max-width: 750px; margin: 0 auto; color: #4a5568;">
+                Sistem penilaian berbasis proses untuk menguji otentisitas, ketahanan argumen lisan, dinamika presentasi kelompok, serta prinsip <i>Tabayyun</i> (verifikasi data) mahasiswa.
+            </p>
+            <button class="btn-enter" onclick="enterApp()">🚀 Masuk ke Aplikasi Penilaian</button>
+        </div>
+    </div>
+
+    <!-- AREA UTAMA APLIKASI -->
+    <div id="app-view" style="display: none;">
+        
+        <!-- METADATA MAHASISWA & KELOMPOK -->
+        <div class="meta-card">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div>
+                    <label><strong>Nama Mahasiswa:</strong></label>
+                    <input type="text" id="mhs-name" style="width:100%" placeholder="Nama mahasiswa...">
+                </div>
+                <div>
+                    <label><strong>NIM / Kelompok:</strong></label>
+                    <input type="text" id="mhs-nim" style="width:100%" placeholder="NIM / Nama Kelompok...">
+                </div>
+                <div>
+                    <label><strong>Mekanisme Uji:</strong></label>
+                    <select id="mhs-role" style="width:100%">
+                        <option value="Targeted Sampling (5-7 Mnt)">Targeted Sampling (5-7 Mnt)</option>
+                        <option value="Presentasi Kelompok">Presentasi Kelompok</option>
+                        <option value="Diskusi Umum Kelas">Aktif Diskusi Umum Kelas</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVIGASI 3 TABS -->
+        <div class="tab-nav no-print">
+            <button class="tab-btn active" onclick="switchWindow('win-tbca', event)">📘 Jendela 1: Individu T-BCA</button>
+            <button class="tab-btn" onclick="switchWindow('win-kelompok', event)">👥 Jendela 2: Presentasi Kelompok</button>
+            <button class="tab-btn" onclick="switchWindow('win-diskusi', event)">🗣️ Jendela 3: Moderasi Diskusi</button>
+            <button class="tab-btn" style="flex: 0.3; background: #edf2f7; color: var(--primary);" onclick="backToLanding()">🏠</button>
+        </div>
+
+        <!-- JENDELA 1: ASESMEN RESMI MODEL T-BCA (INDIVIDU) -->
+        <div id="win-tbca" class="window-content active">
+            <h2 class="section-title">🎲 Bank Pertanyaan Klarifikasi Lisan (60 Pertanyaan Kognitif & Tabayyun)</h2>
+            <div class="generator-box">
+                <div class="controls-row no-print">
+                    <label for="filter-level-w1"><strong>Filter Kategori (20 Pertanyaan/Kategori):</strong></label>
+                    <select id="filter-level-w1">
+                        <option value="ALL">Semua Pertanyaan (60)</option>
+                        <option value="LOGIKA">Alur Logika & Konflik (C4 - 20 Soal)</option>
+                        <option value="KOMPARASI">Komparasi Teori (C5 - 20 Soal)</option>
+                        <option value="TABAYYUN">Verifikasi Data & AI (C5-C6 - 20 Soal)</option>
+                    </select>
+                    <button class="btn-action" onclick="generateRandomQuestion(1)">🔀 Acak Pertanyaan</button>
+                </div>
+
+                <div class="question-display">
+                    <div id="q-level-w1" class="badge-level">Pilih filter dan klik acak</div>
+                    <div id="q-text-w1" class="question-text">Pertanyaan pemantik klarifikasi lisan akan muncul di sini...</div>
+                </div>
+
+                <div class="no-print" style="margin-top: 15px;">
+                    <button class="btn-action btn-timer" onclick="startTimer(420)">⏱️ Targeted Sampling (7 Mnt)</button>
+                    <button class="btn-action btn-timer" onclick="startTimer(300)">⏱️ Targeted Sampling (5 Mnt)</button>
+                    <button class="btn-action btn-timer" onclick="resetTimer()">⏸️ Reset Timer</button>
+                    <div class="timer-display" id="timer-count">05:00</div>
+                </div>
+            </div>
+
+            <h2 class="section-title">📊 Rubrik Penilaian Standar T-BCA (Sesuai Naskah Esai)[cite: 3]</h2>
+            <div class="calculator">
+                <h3>1. Aspek Produk / Naskah Karya Tulis (Bobot 40%)[cite: 3]</h3>
+                <table>
+                    <tr><th>Indikator Kinerja</th><th>Skor Maks</th><th>Input Skor</th></tr>
+                    <tr>
+                        <td>
+                            Kualitas & Kerapian Naskah (Aspek Produk)[cite: 3]
+                            <span class="rubric-hint">Tinggi (31-40), Sedang (16-30), Rendah (0-15)[cite: 3]</span>
+                        </td>
+                        <td>40</td>
+                        <td><input type="number" class="tbca-score" min="0" max="40" value="0" oninput="calculateTBCA()"></td>
+                    </tr>
+                </table>
+
+                <h3>2. Aspek Ujian Klarifikasi Lisan / Sesi Tabayyun (Bobot 60%)[cite: 3]</h3>
+                <table>
+                    <tr><th>Indikator Kinerja</th><th>Skor Maks</th><th>Input Skor</th></tr>
+                    <tr>
+                        <td>Kedalaman Analisis Kognitif C4–C6[cite: 3]</td>
+                        <td>25</td>
+                        <td><input type="number" class="tbca-score" min="0" max="25" value="0" oninput="calculateTBCA()"></td>
+                    </tr>
+                    <tr>
+                        <td>Artikulasi & Ketahanan Argumentasi[cite: 3]</td>
+                        <td>20</td>
+                        <td><input type="number" class="tbca-score" min="0" max="20" value="0" oninput="calculateTBCA()"></td>
+                    </tr>
+                    <tr>
+                        <td>Integritas & Verifikasi Data / Tabayyun[cite: 3]</td>
+                        <td>15</td>
+                        <td><input type="number" class="tbca-score" min="0" max="15" value="0" oninput="calculateTBCA()"></td>
+                    </tr>
+                </table>
+
+                <div class="score-summary">
+                    <div class="result-details">
+                        <span>Total Nilai T-BCA Individu: <strong id="tbca-total">0</strong> / 100</span>
+                        <span id="tbca-badge" class="predicate-badge">Belum Dinilai</span>
+                    </div>
+                    <div class="progress-container"><div id="tbca-progress" class="progress-bar"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JENDELA 2: PENILAIAN PRESENTASI KELOMPOK -->
+        <div id="win-kelompok" class="window-content">
+            <h2 class="section-title">👥 Penilaian Performa & Penyampaian Presentasi Kelompok</h2>
+            <div class="calculator">
+                <table>
+                    <tr><th>Indikator Evaluasi Kelompok</th><th>Skor Maks</th><th>Input Skor</th></tr>
+                    <tr>
+                        <td>
+                            Kualitas Media Visual & Kejelasan Penyampaian
+                            <span class="rubric-hint">Slide/media informatif, alur penyampaian sistematis, tidak membaca slide secara mentah.</span>
+                        </td>
+                        <td>30</td>
+                        <td><input type="number" class="kelompok-score" min="0" max="30" value="0" oninput="calculateKelompok()"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Kekompakan & Penguasaan Sesi Diskusi Tim
+                            <span class="rubric-hint">Pembagian peran seimbang saat presentasi, sinergi dalam menjawab pertanyaan sanggahan.</span>
+                        </td>
+                        <td>35</td>
+                        <td><input type="number" class="kelompok-score" min="0" max="35" value="0" oninput="calculateKelompok()"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Manajemen Waktu & Etika Kelompok
+                            <span class="rubric-hint">Ketepatan durasi presentasi, adab menyampaikan materi, serta kerapian penutupan.</span>
+                        </td>
+                        <td>35</td>
+                        <td><input type="number" class="kelompok-score" min="0" max="35" value="0" oninput="calculateKelompok()"></td>
+                    </tr>
+                </table>
+
+                <div class="score-summary">
+                    <div class="result-details">
+                        <span>Total Nilai Presentasi Kelompok: <strong id="kelompok-total">0</strong> / 100</span>
+                        <span id="kelompok-badge" class="predicate-badge">Belum Dinilai</span>
+                    </div>
+                    <div class="progress-container"><div id="kelompok-progress" class="progress-bar"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JENDELA 3: MODERASI DISKUSI UMUM -->
+        <div id="win-diskusi" class="window-content">
+            <h2 class="section-title">🗣️ Moderasi Keaktifan Diskusi Kelas (Individu)</h2>
+
+            <div class="custom-q-box no-print">
+                <h3 style="margin-top:0; color: var(--primary); font-size: 1.05rem;">➕ Input Pertanyaan / Sanggahan Diskusi Mahasiswa</h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <input type="text" id="custom-q-input" style="flex: 1; min-width: 250px;" placeholder="Tuliskan pertanyaan atau sanggahan yang diajukan mahasiswa...">
+                    <button class="btn-action btn-small" onclick="addCustomQuestion()">💾 Simpan Pertanyaan</button>
+                </div>
+
+                <div class="history-box" style="margin-top: 15px;">
+                    <strong>📌 Catatan Pertanyaan/Sanggahan Diskusi:</strong>
+                    <ol id="discussion-q-list" class="history-list">
+                        <li style="color: #a0aec0;">Belum ada pertanyaan yang dicatat...</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="calculator" style="margin-top: 20px;">
+                <table>
+                    <tr><th>Indikator Keaktifan Diskusi</th><th>Skor Maks</th><th>Input Skor</th></tr>
+                    <tr>
+                        <td>Kualitas Pertanyaan / Sanggahan Kritis</td>
+                        <td>40</td>
+                        <td><input type="number" class="diskusi-score" min="0" max="40" value="0" oninput="calculateDiskusi()"></td>
+                    </tr>
+                    <tr>
+                        <td>Adab Akademik & Etika Berargumen (Adab al-'Aql)</td>
+                        <td>30</td>
+                        <td><input type="number" class="diskusi-score" min="0" max="30" value="0" oninput="calculateDiskusi()"></td>
+                    </tr>
+                    <tr>
+                        <td>Partisipasi Aktif & Kontribusi Diskusi</td>
+                        <td>30</td>
+                        <td><input type="number" class="diskusi-score" min="0" max="30" value="0" oninput="calculateDiskusi()"></td>
+                    </tr>
+                </table>
+
+                <div class="score-summary">
+                    <div class="result-details">
+                        <span>Total Nilai Diskusi: <strong id="diskusi-total">0</strong> / 100</span>
+                        <span id="diskusi-badge" class="predicate-badge">Belum Dinilai</span>
+                    </div>
+                    <div class="progress-container"><div id="diskusi-progress" class="progress-bar"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CATATAN FEEDBACK & AKSI CETAK -->
+        <div style="margin-top: 20px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <label><strong>Catatan & Umpan Balik Substantif Dosen (Direct Feedback):</strong></label>
+            <textarea id="feedback" style="width:100%; height:80px; margin-top:5px;" placeholder="Tuliskan umpan balik terkait alur pikir, kerja sama tim, dan otentisitas referensi..."></textarea>
+        </div>
+
+        <div class="action-container no-print">
+            <button class="btn-action btn-download" onclick="window.print()">🖨️ Cetak / PDF Laporan Penilaian</button>
+            <button class="btn-action btn-reset" onclick="resetForm()">🔄 Reset Semua Penilaian</button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function enterApp() {
+        document.getElementById('landing-view').style.display = 'none';
+        document.getElementById('app-view').style.display = 'block';
+    }
+
+    function backToLanding() {
+        document.getElementById('app-view').style.display = 'none';
+        document.getElementById('landing-view').style.display = 'block';
+    }
+
+    function switchWindow(windowId, evt) {
+        document.querySelectorAll('.window-content').forEach(win => win.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+        document.getElementById(windowId).classList.add('active');
+        evt.currentTarget.classList.add('active');
+    }
+
+    // BANK 60 PERTANYAAN (20 LOGIKA, 20 KOMPARASI, 20 TABAYYUN)
+    const questions = [
+        // --- 20 SOAL LOGIKA (C4) ---
+        { level: "LOGIKA (C4)", text: "Bagaimana alur dan logika berpikir Anda sehingga dapat merumuskan masalah utama dalam tulisan ini?" },
+        { level: "LOGIKA (C4)", text: "Apakah ada asumsi mendasar yang Anda gunakan dalam membangun argumen ini? Mengapa asumsi tersebut valid?" },
+        { level: "LOGIKA (C4)", text: "Sebutkan titik krusial dalam analisis Anda tempat terjadinya lompatan logika, dan bagaimana Anda mengatasinya?" },
+        { level: "LOGIKA (C4)", text: "Bagaimana hubungan sebab-akibat yang Anda bangun antara variabel/konsep utama dalam esai Anda?" },
+        { level: "LOGIKA (C4)", text: "Jika salah satu premis utama tulisan Anda terbukti salah, bagaimana hal itu mempengaruhi kesimpulan akhir Anda?" },
+        { level: "LOGIKA (C4)", text: "Mengapa Anda menyimpulkan bagian tersebut sebagai krisis atau masalah utama, bukan sekadar fenomena biasa?" },
+        { level: "LOGIKA (C4)", text: "Bagaimana Anda memisahkan antara fakta obyektif dan opini pribadi dalam pembahasan bab analisis Anda?" },
+        { level: "LOGIKA (C4)", text: "Apakah ada kontradiksi internal dalam data yang Anda temukan? Bagaimana Anda menyelaraskannya secara logis?" },
+        { level: "LOGIKA (C4)", text: "Bagaimana alur sintesis yang Anda lakukan dari beberapa temuan data hingga terbentuk rekomendasi?" },
+        { level: "LOGIKA (C4)", text: "Mengapa argumen lawan tidak Anda jadikan opsi utama dalam pembahasan? Apa kelemahan logis mereka?" },
+        { level: "LOGIKA (C4)", text: "Bagaimana Anda memvalidasi bahwa fenomena yang Anda kaji bukan sekadar kebetulan (korelasi spasial) melainkan kausalitas?" },
+        { level: "LOGIKA (C4)", text: "Apa indikator utama yang Anda gunakan untuk mengukur tingkat keberhasilan gagasan/solusi dalam esai Anda?" },
+        { level: "LOGIKA (C4)", text: "Bisakah Anda jelaskan kerangka berpikir (conceptual framework) tulisan ini dalam kurun waktu 1 menit?" },
+        { level: "LOGIKA (C4)", text: "Mengapa Anda memilih pendekatan kualitatif/kuantitatif ini untuk membedah masalah tersebut?" },
+        { level: "LOGIKA (C4)", text: "Bagaimana batasan masalah yang Anda buat mencegah pembahasan tulisan melebar ke mana-mana?" },
+        { level: "LOGIKA (C4)", text: "Bagaimana deduksi logika Anda bekerja ketika menerapkan teori umum ke dalam konteks kasus spesifik ini?" },
+        { level: "LOGIKA (C4)", text: "Apakah ada bias konfirmasi yang Anda sadari saat menyusun urutan argumen ini?" },
+        { level: "LOGIKA (C4)", text: "Bagaimana runtutan paragraf dari pendahuluan ke pembahasan menjaga koherensi pesan utama Anda?" },
+        { level: "LOGIKA (C4)", text: "Apa alasan akademis Anda menetapkan variabel tersebut sebagai faktor dominan dalam analisis?" },
+        { level: "LOGIKA (C4)", text: "Bagaimana analisis ini dapat menjelaskan fenomena serupa di tempat atau kurun waktu yang berbeda?" },
+
+        // --- 20 SOAL KOMPARASI (C5) ---
+        { level: "KOMPARASI (C5)", text: "Mengapa Anda lebih memilih teori/pendekatan A dibandingkan teori B yang juga relevan dengan topik ini?" },
+        { level: "KOMPARASI (C5)", text: "Apa perbedaan paling mendasar antara sudut pandang Anda dengan literatur terdahulu yang Anda kutip?" },
+        { level: "KOMPARASI (C5)", text: "Jika gagasan Anda dibandingkan dengan kondisi riil di lapangan, di mana letak celah (gap) terbesarnya?" },
+        { level: "KOMPARASI (C5)", text: "Bagaimana perbandingan tingkat efektivitas antara solusi konvensional dan solusi yang Anda tawarkan?" },
+        { level: "KOMPARASI (C5)", text: "Mengapa konsep ini dianggap lebih unggul untuk membedah kasus masyarakat kontemporer dibanding konsep klasik?" },
+        { level: "KOMPARASI (C5)", text: "Bagaimana Anda mempertemukan dua pandangan pakar yang saling bertentangan di dalam naskah Anda?" },
+        { level: "KOMPARASI (C5)", text: "Apa kelebihan dan kekurangan metode yang Anda gunakan jika dibandingkan dengan penelitian terdahulu?" },
+        { level: "KOMPARASI (C5)", text: "Seandainya studi ini dilakukan pada konteks budaya/daerah lain, perubahan signifikan apa yang Anda prediksikan?" },
+        { level: "KOMPARASI (C5)", text: "Bagaimana perbandingan dampak jangka pendek dan jangka panjang dari solusi yang Anda rekomendasikan?" },
+        { level: "KOMPARASI (C5)", text: "Mengapa referensi dari jurnal A dianggap lebih berbobot untuk topik ini dibanding rujukan dari buku B?" },
+        { level: "KOMPARASI (C5)", text: "Apa bedanya argumen yang Anda bawa dengan argumen dari kecerdasan buatan jika diberi perintah serupa?" },
+        { level: "KOMPARASI (C5)", text: "Bagaimana kontras antara harapan teoritis dan realitas empiris yang Anda temukan dalam tulisan ini?" },
+        { level: "KOMPARASI (C5)", text: "Jika ada 3 alternatif tindakan, mengapa alternatif yang Anda pilih memiliki rasio risiko terkecil?" },
+        { level: "KOMPARASI (C5)", text: "Bagaimana perbandingan paradigma filsafat ilmu yang melandasi dua sumber utama rujukan Anda?" },
+        { level: "KOMPARASI (C5)", text: "Apa pembeda utama yang membuat tulisan ini tidak sekadar mengulang (repetitif) tulisan orang lain?" },
+        { level: "KOMPARASI (C5)", text: "Bagaimana Anda membandingkan skala prioritas dari tiap-tiap poin rekomendasi di bab penutup?" },
+        { level: "KOMPARASI (C5)", text: "Apa kelemahan teori pilihan Anda yang berhasil ditutupi oleh teori pendukung lainnya?" },
+        { level: "KOMPARASI (C5)", text: "Bagaimana Anda menilai keberpihakan atau posisi penulis dari dua sumber rujukan kontras di naskah Anda?" },
+        { level: "KOMPARASI (C5)", text: "Mengapa kerangka berpikir tokoh A lebih cocok diterapkan di Indonesia dibanding kerangka berpikir tokoh B?" },
+        { level: "KOMPARASI (C5)", text: "Bagaimana evaluasi perbandingan beban biaya/risiko vs manfaat dari gagasan yang Anda paparkan?" },
+
+        // --- 20 SOAL TABAYYUN (C5-C6) ---
+        { level: "TABAYYUN (C5-C6)", text: "Bagaimana Anda membuktikan bahwa referensi rujukan utama dalam naskah Anda otentik dan bukan halusinasi AI?" },
+        { level: "TABAYYUN (C5-C6)", text: "Secara transparan, bagaimana posisi AI saat Anda menyusun naskah ini? Mitra berpikir atau automatic generator?" },
+        { level: "TABAYYUN (C5-C6)", text: "Coba tunjukkan di mana letak jejak pemikiran orisinal Anda yang paling murni di dalam bab analisis tulisan ini!" },
+        { level: "TABAYYUN (C5-C6)", text: "Bagaimana mekanisme verifikasi ulang (tabayyun) yang Anda lakukan saat menemukan data kuantitatif/fakta yang meragukan?" },
+        { level: "TABAYYUN (C5-C6)", text: "Jika saya mengecek langsung sumber pustaka nomor X, apakah kutipan Anda benar-benar sesuai dengan konteks aslinya?" },
+        { level: "TABAYYUN (C5-C6)", text: "Bagaimana Anda memastikan tidak terjadi bias pemilihan data (cherry-picking) demi mendukung hipotesis Anda?" },
+        { level: "TABAYYUN (C5-C6)", text: "Langkah konkrit apa yang Anda lakukan untuk membersihkan tulisan ini dari potensi plagiarisme atau fabrikasi?" },
+        { level: "TABAYYUN (C5-C6)", text: "Sebutkan satu kutipan paling krusial di tulisan Anda dan ceritakan bagaimana alur Anda menemukannya!" },
+        { level: "TABAYYUN (C5-C6)", text: "Bagaimana Anda menilai kredibilitas penulis atau lembaga penyedia data sekunder yang Anda gunakan?" },
+        { level: "TABAYYUN (C5-C6)", text: "Jika AI membantu membuatkan draf outline, perubahan kritis apa yang Anda lakukan agar sesuai pemikiran Anda sendiri?" },
+        { level: "TABAYYUN (C5-C6)", text: "Bagaimana Anda memverifikasi bahwa istilah/terminologi asing dalam naskah digunakan sesuai makna keilmuannya?" },
+        { level: "TABAYYUN (C5-C6)", text: "Apakah ada data yang sengaja Anda gugurkan atau tidak dipakai? Apa alasan obyektif dibalik penyaringan itu?" },
+        { level: "TABAYYUN (C5-C6)", text: "Bagaimana Anda mempertanggungjawabkan ketepatan interpretasi tabel atau grafik yang Anda kutip?" },
+        { level: "TABAYYUN (C5-C6)", text: "Jika hasil analisis AI bertentangan dengan temuan fakta Anda di lapangan, argumen mana yang Anda prioritaskan dan mengapa?" },
+        { level: "TABAYYUN (C5-C6)", text: "Bisakah Anda menjelaskan makna kalimat di paragraf X bab 2 tanpa membaca naskah sama sekali saat ini?" },
+        { level: "TABAYYUN (C5-C6)", text: "Bagaimana prinsip kejujuran akademik dan adab ilmiah Anda terapkan selama proses pengumpulan bahan esai?" },
+        { level: "TABAYYUN (C5-C6)", text: "Sebutkan salah satu rujukan yang sempat Anda ragukan keabsahannya, dan bagaimana proses konfirmasi yang Anda lakukan!" },
+        { level: "TABAYYUN (C5-C6)", text: "Bagaimana Anda memastikan bahwa opini subjektif personal Anda tidak merusak objektivitas data penelitian?" },
+        { level: "TABAYYUN (C5-C6)", text: "Jika dibuktikan ada kekeliruan data pada rujukan utama Anda, bagaimana sikap dan langkah korektif akademis Anda?" },
+        { level: "TABAYYUN (C5-C6)", text: "Bagaimana Anda menjamin bahwa karya tulis ini merefleksikan kapasitas intelektual Anda sendiri sebagai mahasiswa?" }
+    ];
+
+    function generateRandomQuestion(winNum) {
+        const filterVal = document.getElementById(`filter-level-w1`).value;
+        let pool = questions;
+
+        if (filterVal !== "ALL") {
+            pool = questions.filter(q => q.level.includes(filterVal));
+        }
+
+        const selected = pool[Math.floor(Math.random() * pool.length)];
+        document.getElementById(`q-level-w1`).innerText = selected.level;
+        document.getElementById(`q-text-w1`).innerText = `"${selected.text}"`;
+    }
+
+    // FITUR MEMASUKKAN PERTANYAAN DI JENDELA 3
+    let discussionQuestions = [];
+    function addCustomQuestion() {
+        const input = document.getElementById('custom-q-input');
+        const qText = input.value.trim();
+
+        if (qText === "") {
+            alert("Harap masukkan teks pertanyaan/sanggahan terlebih dahulu!");
+            return;
+        }
+
+        discussionQuestions.push(qText);
+        input.value = "";
+        renderDiscussionQuestions();
+    }
+
+    function renderDiscussionQuestions() {
+        const listEl = document.getElementById('discussion-q-list');
+        if (discussionQuestions.length === 0) {
+            listEl.innerHTML = '<li style="color: #a0aec0;">Belum ada pertanyaan yang dicatat...</li>';
+            return;
+        }
+
+        listEl.innerHTML = discussionQuestions.map((q, idx) => `
+            <li style="margin-bottom: 5px;">
+                <strong>"${q}"</strong>
+                <button class="no-print" style="color:red; background:none; border:none; cursor:pointer; font-size:0.8rem;" onclick="removeDiscussionQuestion(${idx})">[Hapus]</button>
+            </li>
+        `).join('');
+    }
+
+    function removeDiscussionQuestion(index) {
+        discussionQuestions.splice(index, 1);
+        renderDiscussionQuestions();
+    }
+
+    let timerInterval = null;
+    function startTimer(seconds) {
+        clearInterval(timerInterval);
+        let timeLeft = seconds;
+        updateTimerDisplay(timeLeft);
+
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay(timeLeft);
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                alert("⏰ Waktu klarifikasi lisan telah selesai!");
+            }
+        }, 1000);
+    }
+
+    function resetTimer() {
+        clearInterval(timerInterval);
+        document.getElementById("timer-count").innerText = "05:00";
+    }
+
+    function updateTimerDisplay(seconds) {
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        document.getElementById("timer-count").innerText = `${m}:${s}`;
+    }
+
+    function calculateTBCA() {
+        let total = 0;
+        document.querySelectorAll('.tbca-score').forEach(input => {
+            let val = parseFloat(input.value) || 0;
+            let max = parseFloat(input.getAttribute('max'));
+            if (val > max) { val = max; input.value = max; }
+            total += val;
+        });
+        document.getElementById('tbca-total').innerText = total;
+        updateBadge('tbca-progress', 'tbca-badge', total);
+    }
+
+    function calculateKelompok() {
+        let total = 0;
+        document.querySelectorAll('.kelompok-score').forEach(input => {
+            let val = parseFloat(input.value) || 0;
+            let max = parseFloat(input.getAttribute('max'));
+            if (val > max) { val = max; input.value = max; }
+            total += val;
+        });
+        document.getElementById('kelompok-total').innerText = total;
+        updateBadge('kelompok-progress', 'kelompok-badge', total);
+    }
+
+    function calculateDiskusi() {
+        let total = 0;
+        document.querySelectorAll('.diskusi-score').forEach(input => {
+            let val = parseFloat(input.value) || 0;
+            let max = parseFloat(input.getAttribute('max'));
+            if (val > max) { val = max; input.value = max; }
+            total += val;
+        });
+        document.getElementById('diskusi-total').innerText = total;
+        updateBadge('diskusi-progress', 'diskusi-badge', total);
+    }
+
+    function updateBadge(progressBarId, badgeId, total) {
+        const progressBar = document.getElementById(progressBarId);
+        const badge = document.getElementById(badgeId);
+
+        progressBar.style.width = total + '%';
+
+        if (total >= 85) {
+            progressBar.style.backgroundColor = 'var(--success)';
+            badge.style.backgroundColor = 'var(--success)';
+            badge.innerText = 'Sangat Baik (85–100)';
+        } else if (total >= 60) {
+            progressBar.style.backgroundColor = 'var(--warning)';
+            badge.style.backgroundColor = 'var(--warning)';
+            badge.innerText = 'Cukup (60–84)';
+        } else {
+            progressBar.style.backgroundColor = 'var(--danger)';
+            badge.style.backgroundColor = 'var(--danger)';
+            badge.innerText = 'Perlu Perbaikan (0–59)';
+        }
+    }
+
+    function resetForm() {
+        if (confirm("Reset seluruh data penilaian dan catatan pertanyaan?")) {
+            document.getElementById("mhs-name").value = "";
+            document.getElementById("mhs-nim").value = "";
+            document.getElementById("feedback").value = "";
+            document.querySelectorAll('input[type="number"]').forEach(input => input.value = 0);
+            discussionQuestions = [];
+            renderDiscussionQuestions();
+            calculateTBCA();
+            calculateKelompok();
+            calculateDiskusi();
+            resetTimer();
+        }
+    }
+</script>
+
+</body>
+</html>
