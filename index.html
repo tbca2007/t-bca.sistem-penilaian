@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Evaluasi Tabayyun-Based Classroom Assessment (T-BCA)</title>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --accent: #2b6cb0;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --success: #38a169;
+            --warning: #dd6b20;
+            --danger: #e53e3e;
+            --tabayyun: #2c7a7b;
+            --purple: #6b46c1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a365d, #2c7a7b);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        header h1 { margin: 0 0 5px 0; font-size: 1.7rem; }
+        header p { margin: 0; opacity: 0.9; font-size: 0.9rem; }
+
+        .landing-page {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .hero-banner {
+            text-align: center;
+            padding: 20px 10px 30px 10px;
+            border-bottom: 2px dashed #e2e8f0;
+            margin-bottom: 25px;
+        }
+
+        .btn-enter {
+            background: linear-gradient(135deg, #2c7a7b, #1a365d);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            margin-top: 15px;
+        }
+
+        .btn-enter:hover { transform: translateY(-3px); }
+
+        .tab-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #cbd5e0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 15px;
+            font-size: 0.88rem;
+            font-weight: bold;
+            border: none;
+            background: #e2e8f0;
+            color: #4a5568;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .tab-btn:hover { background: #cbd5e0; color: var(--primary); }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+        }
+
+        .window-content { display: none; }
+        .window-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .meta-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid var(--tabayyun);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: var(--primary);
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+            margin-top: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .generator-box {
+            background: var(--card-bg);
+            border: 2px dashed var(--tabayyun);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #2c7a7b, #1a365d);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        .btn-action:hover { transform: translateY(-2px); }
+        .btn-download { background: linear-gradient(135deg, #2f855a, #22543d); }
+        .btn-excel { background: linear-gradient(135deg, #276749, #1c4532); }
+        .btn-batch { background: linear-gradient(135deg, #dd6b20, #9c4221); }
+        .btn-reset { background: linear-gradient(135deg, #c53030, #742a2a); }
+        .btn-timer { background: #4a5568; font-size: 0.85rem; padding: 6px 12px; }
+
+        select, input[type="text"], input[type="number"], textarea {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e0;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        .timer-display {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary);
+            background: #edf2f7;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .question-display {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e6fffa;
+            border-radius: 8px;
+            border-left: 4px solid var(--tabayyun);
+            text-align: left;
+            min-height: 70px;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-top: 5px;
+        }
+
+        .badge-level {
+            background: var(--tabayyun);
+            color: white;
+            font-size: 0.78rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .custom-q-box {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        .calculator {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th { background-color: #e6fffa; color: var(--primary); }
+
+        .rubric-hint {
+            display: block;
+            font-size: 0.78rem;
+            color: #718096;
+            margin-top: 2px;
+        }
+
+        .score-summary {
+            background: #edf2f7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .dashboard-summary-box {
+            background: linear-gradient(135deg, #ebf8ff, #e6fffa);
+            border: 2px solid var(--tabayyun);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .dash-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-top: 4px solid var(--accent);
+            text-align: center;
+        }
+
+        .dash-card h4 { margin: 0 0 5px 0; font-size: 0.85rem; color: #4a5568; }
+        .dash-card .value { font-size: 1.4rem; font-weight: bold; color: var(--primary); }
+
+        .progress-container {
+            background: #cbd5e0;
+            border-radius: 10px;
+            height: 18px;
+            width: 100%;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            background: var(--accent);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .result-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .predicate-badge {
+            padding: 4px 12px;
+            border-radius: 6px;
+            color: white;
+            background: #a0aec0;
+            font-size: 0.95rem;
+        }
+
+        .action-container {
+            text-align: center;
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .rekap-table-box {
+            margin-top: 25px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .table-responsive-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .rekap-table {
+            min-width: 850px;
+            width: 100%;
+        }
+
+        .status-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .status-sampled { background: #e6fffa; color: #234e52; border: 1px solid #319795; }
+        .status-nonsampled { background: #fffaf0; color: #7b341e; border: 1px solid #dd6b20; }
+
+        @media print {
+            body { background: white; color: black; padding: 0; }
+            .no-print, button, select, .tab-nav, .landing-page, .custom-q-box { display: none !important; }
+            .window-content { display: block !important; }
+            .generator-box { border: 1px solid #ccc; text-align: left; }
+            input, textarea { border: none !important; background: transparent !important; padding: 0 !important; }
+            header { background: none; color: black; border-bottom: 2px solid black; padding: 0 0 10px 0; }
+            .meta-card { border: none; padding: 0; }
+            .table-responsive-wrapper { overflow: visible !important; }
+            .rekap-table { min-width: 100% !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Model Tabayyun-Based Classroom Assessment (T-BCA)</h1>
+        <p>Aplikasi Penilaian Berbasis Proses untuk Penyeimbang AI & Benteng Nalar Kritis Mahasiswa</p>
+    </header>
+
+    <!-- LANDING PAGE -->
+    <div id="landing-view" class="landing-page">
+        <div class="hero-banner">
+            <h2 style="color: var(--primary); margin-bottom: 10px;">Selamat Datang di Portal Evaluasi T-BCA</h2>
+            <p style="max-width: 750px; margin: 0 auto; color: #4a5568;">
+                Sistem penilaian berbasis proses untuk menguji otentisitas, ketahanan argumen lisan, dinamika presentasi kelompok, serta prinsip <i>Tabayyun</i> (verifikasi data) mahasiswa.
+            </p>
+            <button class="btn-enter" onclick="enterApp()">🚀 Masuk ke Aplikasi Penilaian</button>
+        </div>
+    </div>
+
+    <!-- AREA UTAMA APLIKASI -->
+    <div id="app-view" style="display: none;">
+        
+        <!-- METADATA MAHASISWA & KELOMPOK -->
+        <div class="meta-card">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div>
+                    <label><strong>Nama Mahasiswa:</strong></label>
+                    <input type="text" id="mhs-name" style="width:100%" placeholder="Nama mahasiswa...">
+                </div>
+                <div>
+                    <label><strong>NIM / Kelompok:</strong></label>
+                    <input type="text" id="mhs-nim" style="width:100%" placeholder="NIM atau Kelompok...">
+                </div>
+                <div>
+                    <label><strong>Status Uji Lisan T-BCA:</strong></label>
+                    <select id="mhs-status" style="width:100%" onchange="updateDashboardSummary()">
+                        <option value="SAMPLED">Terpilih Uji Lisan (Skema 40% Kelompok + 60% T-BCA)</option>
+                        <option value="NON_SAMPLED">Tidak Terpilih Uji Lisan (Skema Adaptif 40% Kelompok + 60% Diskusi)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVIGASI TABS -->
+        <div class="tab-nav no-print">
+            <button class="tab-btn active" onclick="switchWindow('win-tbca', event)">📘 Jendela 1: Individu T-BCA</button>
+            <button class="tab-btn" onclick="switchWindow('win-kelompok', event)">👥 Jendela 2: Kelompok & Naskah</button>
+            <button class="tab-btn" onclick="switchWindow('win-diskusi', event)">🗣️ Jendela 3: Moderasi Diskusi</button>
+            <button class="tab-btn" style="flex: 0.3; background: #edf2f7; color: var(--primary);" onclick="backToLanding()">🏠</button>
+        </div>
+
+        <!-- JENDELA 1: ASESMEN RESMI MODEL T-BCA (INDIVIDU) -->
+        <div id="win-tbca" class="window-content active">
+            <h2 class="section-title">🎲 Bank Pertanyaan Klarifikasi Lisan (Sampling Lisan)</h2>
+            <div class="generator-box">
+                <div class="controls-row no-print">
+                    <label for="filter-level-w1"><strong>Filter Kategori:</strong></label>
+                    <select id="filter-level-w1">
+                        <option value="ALL">Semua Pertanyaan</option>
+                        <option value="LOGIKA">Alur Logika & Konflik (C4)</option>
+                        <option value="KOMPARASI">Komparasi Teori (C5)</option>
+                        <option value="TABAYYUN">Verifikasi Data & AI (C5-C6)</option>
+                    </select>
+                    <button class="btn-action" onclick="generateRandomQuestion()">🔀 Acak Pertanyaan</button>
+                </div>
+
+                <div class="question-display">
+                    <div id="q-level-w1" class="badge-level">Pilih filter dan klik acak</div>
+                    <div id="q-text-w1" class="question-text">Pertanyaan pemantik klarifikasi lisan akan muncul di sini...</div>
+                </div>
+
+                <div class="no-print" style="margin-top: 15px;">
+                    <button class="btn-action btn-timer" onclick="startTimer(420)">⏱️ Sampling (7 Mnt)</button>
+                    <button class="btn-action btn-timer" onclick="startTimer(300)">⏱️ Sampling (5 Mnt)</button>
+                    <button class="btn-action btn-timer" onclick="resetTimer()">⏸️ Reset Timer</button>
+                    <div class="timer-display" id="timer-count">05:00</div>
+                </div>
+            </div>
+
+            <h2 class="section-title">📊 Rubrik Penilaian Ujian Klarifikasi Lisan T-BCA (Murni Skor 0-100)</h2>
+            <p style="font-size: 0.88rem; color: #718096; margin-top: -10px;">
+                <i>*Khusus mahasiswa yang terpilih uji lisan. Jika mahasiswa tidak terpilih, biarkan bernilai 0 dan pilih status "Tidak Terpilih" di atas.</i>
+            </p>
+            <div class="calculator">
+                <table>
+                    <tr><th>Indikator Kinerja Lisan Individu</th><th>Skor Maks</th><th>Input Skor</th></tr>
+                    <tr>
+                        <td>
+                            Kedalaman Analisis Kognitif C4–C6
+                            <span class="rubric-hint">Kemampuan mengurai logika, hubungan kausalitas, dan kerangka pemikiran.</span>
+                        </td>
+                        <td>40</td>
+                        <td><input type="number" class="tbca-score" min="0" max="40" value="0" oninput="calculateTBCA()"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Artikulasi & Ketahanan Argumentasi
+                            <span class="rubric-hint">Kemampuan merespons sanggahan secara lisan dengan lancar dan konsisten.</span>
+                        </td>
+                        <td>35</td>
+                        <td><input type="number" class="tbca-score" min="0" max="35" value="0" oninput="calculateTBCA()"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Integritas & Verifikasi Data / Tabayyun
+                            <span class="rubric-hint">Kemampuan membuktikan otentisitas data dan kutipan (bebas halusinasi AI).</span>
+                        </td>
+                        <td>25</td>
+                        <td><input type="number" class="tbca-score" min="0" max="25" value="0" oninput="calculateTBCA()"></td>
+                    </tr>
+                </table>
+
+                <div class="score-summary">
+                    <div class="result-details">
+                        <span>Total Nilai T-BCA Individu: <strong id="tbca-total">0</strong> / 100</span>
+                        <span id="tbca-badge" class="predicate-badge">Belum Dinilai</span>
+                    </div>
+                    <div class="progress-container"><div id="tbca-progress" class="progress-bar"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JENDELA 2: PENILAIAN NASKAH & PRESENTASI KELOMPOK -->
+        <div id="win-kelompok" class="window-content">
+            <h2 class="section-title">👥 Penilaian Naskah Karya Tulis Esai & Presentasi Kelompok</h2>
+            
+            <div class="custom-q-box no-print" style="background: #fffaf0; border-color: #fbd38d; margin-bottom: 20px;">
+                <h3 style="margin-top:0; color: var(--warning); font-size: 1.05rem;">⚡ Input Nilai Kelompok Otomatis (Batch Save)</h3>
+                <p style="margin: 0 0 10px 0; font-size: 0.88rem; color: #4a5568;">
+                    Nilai gabungan Naskah Esai & Presentasi di bawah ini akan disimpan secara simultan ke seluruh anggota kelompok.
+                </p>
+
+                <div id="batch-input-container" style="display: block; margin-top: 10px;">
+                    <label><strong>Daftar Nama & NIM Anggota Kelompok (1 Baris per Mahasiswa):</strong></label>
+                    <textarea id="batch-names" style="width: 100%; height: 90px; margin-top: 5px;" placeholder="Contoh:&#10;rina&#10;rama&#10;alan&#10;kamu"></textarea>
+                </div>
+            </div>
+
+            <div class="calculator">
+                <h3>1. Aspek Naskah Karya Tulis Esai Kelompok (Bobot Komponen: 40%)</h3>
+                <table>
+                    <tr><th>Indikator Naskah Esai</th><th>Skor Maks</th><th>Input Skor</th></tr>
+                    <tr>
+                        <td>
+                            Kualitas, Kerapian, & Struktur Naskah Esai
+                            <span class="rubric-hint">Kerangka logis naskah, kerapian format, keabsahan referensi, serta sistematika penulisan.</span>
+                        </td>
+                        <td>40</td>
+                        <td><input type="number" class="kelompok-score" min="0" max="40" value="0" oninput="calculateKelompok()"></td>
+                    </tr>
+                </table>
+
+                <h3>2. Aspek Performa Presentasi & Diskusi Kelompok (Bobot Komponen: 60%)</h3>
+                <table>
+                    <tr><th>Indikator Performa Presentasi</th><th>Skor Maks</th><th>Input Skor</th></tr>
+                    <tr>
+                        <td>
+                            Kualitas Media Visual & Kejelasan Penyampaian
+                            <span class="rubric-hint">Slide informatif, penyampaian lancar, tidak sekadar membaca slide mentah.</span>
+                        </td>
+                        <td>20</td>
+                        <td><input type="number" class="kelompok-score" min="0" max="20" value="0" oninput="calculateKelompok()"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Kekompakan & Penguasaan Sesi Diskusi Tim
+                            <span class="rubric-hint">Pembagian peran seimbang saat presentasi dan sinergi saat menjawab pertanyaan.</span>
+                        </td>
+                        <td>20</td>
+                        <td><input type="number" class="kelompok-score" min="0" max="20" value="0" oninput="calculateKelompok()"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Manajemen Waktu & Etika Kelompok
+                            <span class="rubric-hint">Ketepatan durasi presentasi, adab penyampaian materi, dan kerapian penutupan.</span>
+                        </td>
+                        <td>20</td>
+                        <td><input type="number" class="kelompok-score" min="0" max="20" value="0" oninput="calculateKelompok()"></td>
+                    </tr>
+                </table>
+
+                <div class="score-summary">
+                    <div class="result-details">
+                        <span>Total Nilai Kelompok: <strong id="kelompok-total">0</strong> / 100</span>
+                        <span id="kelompok-badge" class="predicate-badge">Belum Dinilai</span>
+                    </div>
+                    <div class="progress-container"><div id="kelompok-progress" class="progress-bar"></div></div>
+                </div>
+
+                <div class="no-print" style="margin-top: 15px; text-align: center;">
+                    <button class="btn-action btn-batch" onclick="simpanBatchKelompok()">✨ Simpan / Update Nilai Kelompok ke Semua Anggota</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- JENDELA 3: MODERASI DISKUSI UMUM -->
+        <div id="win-diskusi" class="window-content">
+            <h2 class="section-title">🗣️ Moderasi Keaktifan Diskusi Kelas (Individu)</h2>
+
+            <div class="calculator" style="margin-top: 20px;">
+                <table>
+                    <tr><th>Indikator Keaktifan Diskusi</th><th>Skor Maks</th><th>Input Skor</th></tr>
+                    <tr>
+                        <td>Kualitas Pertanyaan / Sanggahan Kritis</td>
+                        <td>40</td>
+                        <td><input type="number" class="diskusi-score" min="0" max="40" value="0" oninput="calculateDiskusi()"></td>
+                    </tr>
+                    <tr>
+                        <td>Adab Akademik & Etika Berargumen (Adab al-'Aql)</td>
+                        <td>30</td>
+                        <td><input type="number" class="diskusi-score" min="0" max="30" value="0" oninput="calculateDiskusi()"></td>
+                    </tr>
+                    <tr>
+                        <td>Partisipasi Aktif & Kontribusi Diskusi</td>
+                        <td>30</td>
+                        <td><input type="number" class="diskusi-score" min="0" max="30" value="0" oninput="calculateDiskusi()"></td>
+                    </tr>
+                </table>
+
+                <div class="score-summary">
+                    <div class="result-details">
+                        <span>Total Nilai Diskusi Individu: <strong id="diskusi-total">0</strong> / 100</span>
+                        <span id="diskusi-badge" class="predicate-badge">Belum Dinilai</span>
+                    </div>
+                    <div class="progress-container"><div id="diskusi-progress" class="progress-bar"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DASHBOARD SUMMARY -->
+        <div class="dashboard-summary-box">
+            <h3 style="margin:0; color: var(--primary);">📈 Dashboard Summary: Kalkulator Nilai Akhir Perkuliahan</h3>
+            <p id="formula-info" style="margin:5px 0 15px 0; font-size:0.88rem; color:#4a5568; font-weight: bold;">
+                Skema Terdeteksi: Terpilih Sampling Lisan (60% T-BCA + 40% Kelompok)
+            </p>
+
+            <div class="dashboard-grid">
+                <div class="dash-card" id="card-tbca">
+                    <h4>Kontribusi T-BCA</h4>
+                    <div class="value" id="dash-contrib-tbca">0.0</div>
+                    <span id="bobot-tbca-label" style="font-size:0.75rem; color:#718096;">(Bobot 60%)</span>
+                </div>
+                <div class="dash-card">
+                    <h4>Kontribusi Kelompok</h4>
+                    <div class="value" id="dash-contrib-kelompok">0.0</div>
+                    <span id="bobot-kelompok-label" style="font-size:0.75rem; color:#718096;">(Bobot 40%)</span>
+                </div>
+                <div class="dash-card" id="card-diskusi">
+                    <h4>Kontribusi Diskusi</h4>
+                    <div class="value" id="dash-contrib-diskusi">0.0</div>
+                    <span id="bobot-diskusi-label" style="font-size:0.75rem; color:#718096;">(Diabaikan/N/A)</span>
+                </div>
+                <div class="dash-card" style="border-top-color: var(--purple); background: #faf5ff;">
+                    <h4 style="color: var(--purple);">NILAI AKHIR PERFORMA</h4>
+                    <div class="value" id="dash-final-score" style="color: var(--purple); font-size: 1.8rem;">0.0</div>
+                    <div id="dash-final-grade" style="font-weight: bold; margin-top: 3px;">-</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-container no-print">
+            <button class="btn-action" style="background: linear-gradient(135deg, #4c51bf, #2c5282);" onclick="simpanKeRekapKelas()">📥 Simpan / Update Nilai Mahasiswa Ini</button>
+            <button class="btn-action btn-excel" onclick="exportToCSV()">📊 Ekspor Rekap Kelas (CSV/Excel)</button>
+            <button class="btn-action btn-download" onclick="window.print()">🖨️ Cetak / PDF Laporan Penilaian</button>
+            <button class="btn-action btn-reset" onclick="resetForm()">🔄 Reset Form Penilaian</button>
+        </div>
+
+        <!-- TABEL REKAPITULASI KELAS -->
+        <div class="rekap-table-box no-print">
+            <h3 style="margin-top:0; color: var(--primary);">📋 Daftar Rekapitulasi Nilai Kelas (Tersimpan Sementara)</h3>
+            <div class="table-responsive-wrapper">
+                <table id="table-rekap" class="rekap-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">No</th>
+                            <th>Nama Mahasiswa</th>
+                            <th>Status Uji</th>
+                            <th>T-BCA</th>
+                            <th>Kelompok</th>
+                            <th>Diskusi</th>
+                            <th>Nilai Akhir</th>
+                            <th>Grade</th>
+                            <th style="width: 80px;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-rekap">
+                        <tr><td colspan="9" style="text-align:center; color:#a0aec0;">Belum ada data nilai tersimpan.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let classRekapData = [];
+
+    function enterApp() {
+        document.getElementById('landing-view').style.display = 'none';
+        document.getElementById('app-view').style.display = 'block';
+    }
+
+    function backToLanding() {
+        document.getElementById('app-view').style.display = 'none';
+        document.getElementById('landing-view').style.display = 'block';
+    }
+
+    function switchWindow(windowId, evt) {
+        document.querySelectorAll('.window-content').forEach(win => win.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+        document.getElementById(windowId).classList.add('active');
+        evt.currentTarget.classList.add('active');
+    }
+
+    const defaultQuestions = [
+        { level: "LOGIKA (C4)", text: "Bagaimana alur dan logika berpikir Anda sehingga dapat merumuskan masalah utama dalam tulisan ini?" },
+        { level: "LOGIKA (C4)", text: "Apakah ada asumsi mendasar yang Anda gunakan dalam membangun argumen ini? Mengapa asumsi tersebut valid?" },
+        { level: "KOMPARASI (C5)", text: "Mengapa Anda lebih memilih teori/pendekatan A dibandingkan teori B yang juga relevan dengan topik ini?" },
+        { level: "TABAYYUN (C5-C6)", text: "Bagaimana Anda membuktikan bahwa referensi rujukan utama dalam naskah Anda otentik dan bukan halusinasi AI?" }
+    ];
+
+    function generateRandomQuestion() {
+        const selected = defaultQuestions[Math.floor(Math.random() * defaultQuestions.length)];
+        document.getElementById(`q-level-w1`).innerText = selected.level;
+        document.getElementById(`q-text-w1`).innerText = `"${selected.text}"`;
+    }
+
+    let timerInterval = null;
+    function startTimer(seconds) {
+        clearInterval(timerInterval);
+        let timeLeft = seconds;
+        updateTimerDisplay(timeLeft);
+
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay(timeLeft);
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                alert("⏰ Waktu klarifikasi lisan telah selesai!");
+            }
+        }, 1000);
+    }
+
+    function resetTimer() {
+        clearInterval(timerInterval);
+        document.getElementById("timer-count").innerText = "05:00";
+    }
+
+    function updateTimerDisplay(seconds) {
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        document.getElementById("timer-count").innerText = `${m}:${s}`;
+    }
+
+    function calculateTBCA() {
+        let total = 0;
+        document.querySelectorAll('.tbca-score').forEach(input => {
+            let val = parseFloat(input.value) || 0;
+            let max = parseFloat(input.getAttribute('max'));
+            if (val > max) { val = max; input.value = max; }
+            total += val;
+        });
+        document.getElementById('tbca-total').innerText = total;
+        updateBadge('tbca-progress', 'tbca-badge', total);
+
+        if (total > 0) {
+            document.getElementById('mhs-status').value = "SAMPLED";
+        }
+        updateDashboardSummary();
+    }
+
+    function calculateKelompok() {
+        let total = 0;
+        document.querySelectorAll('.kelompok-score').forEach(input => {
+            let val = parseFloat(input.value) || 0;
+            let max = parseFloat(input.getAttribute('max'));
+            if (val > max) { val = max; input.value = max; }
+            total += val;
+        });
+        document.getElementById('kelompok-total').innerText = total;
+        updateBadge('kelompok-progress', 'kelompok-badge', total);
+        updateDashboardSummary();
+    }
+
+    function calculateDiskusi() {
+        let total = 0;
+        document.querySelectorAll('.diskusi-score').forEach(input => {
+            let val = parseFloat(input.value) || 0;
+            let max = parseFloat(input.getAttribute('max'));
+            if (val > max) { val = max; input.value = max; }
+            total += val;
+        });
+        document.getElementById('diskusi-total').innerText = total;
+        updateBadge('diskusi-progress', 'diskusi-badge', total);
+        updateDashboardSummary();
+    }
+
+    // LOGIKA PERHITUNGAN ADAPTIF (SAMPLED vs NON_SAMPLED)
+    function hitungNilaiAkhirMahasiswa(status, nilaiKelompok, nilaiTBCA, nilaiDiskusi) {
+        const bobotKelompok = 0.40; // 40% Kelompok/Naskah
+        const bobotLisan = 0.60;    // 60% Lisan (T-BCA atau Diskusi)
+
+        let nilaiLisanUtama = 0;
+
+        if (status === "SAMPLED") {
+            nilaiLisanUtama = nilaiTBCA;
+        } else {
+            nilaiLisanUtama = nilaiDiskusi;
+        }
+
+        return (nilaiKelompok * bobotKelompok) + (nilaiLisanUtama * bobotLisan);
+    }
+
+    function updateDashboardSummary() {
+        const status = document.getElementById('mhs-status').value;
+        const scoreTBCA = parseFloat(document.getElementById('tbca-total').innerText) || 0;
+        const scoreKelompok = parseFloat(document.getElementById('kelompok-total').innerText) || 0;
+        const scoreDiskusi = parseFloat(document.getElementById('diskusi-total').innerText) || 0;
+
+        let contribTBCA = 0;
+        let contribKelompok = scoreKelompok * 0.40;
+        let contribDiskusi = 0;
+
+        if (status === "SAMPLED") {
+            contribTBCA = scoreTBCA * 0.60;
+            contribDiskusi = 0;
+
+            document.getElementById('formula-info').innerText = "Skema Terdeteksi: Terpilih Sampling Lisan (40% Kelompok/Naskah + 60% T-BCA)";
+            document.getElementById('bobot-tbca-label').innerText = "(Bobot 60%)";
+            document.getElementById('bobot-kelompok-label').innerText = "(Bobot 40%)";
+            document.getElementById('bobot-diskusi-label').innerText = "(Diabaikan/N/A)";
+            
+            document.getElementById('card-tbca').style.opacity = "1";
+            document.getElementById('card-diskusi').style.opacity = "0.4";
+        } else {
+            contribTBCA = 0;
+            contribDiskusi = scoreDiskusi * 0.60;
+
+            document.getElementById('formula-info').innerText = "Skema Terdeteksi: Tidak Terpilih Sampling (Non-Sampling: 40% Kelompok/Naskah + 60% Diskusi)";
+            document.getElementById('bobot-tbca-label').innerText = "(Diabaikan/N/A)";
+            document.getElementById('bobot-kelompok-label').innerText = "(Bobot 40%)";
+            document.getElementById('bobot-diskusi-label').innerText = "(Bobot 60%)";
+
+            document.getElementById('card-tbca').style.opacity = "0.4";
+            document.getElementById('card-diskusi').style.opacity = "1";
+        }
+
+        const finalScore = hitungNilaiAkhirMahasiswa(status, scoreKelompok, scoreTBCA, scoreDiskusi);
+
+        document.getElementById('dash-contrib-tbca').innerText = contribTBCA.toFixed(1);
+        document.getElementById('dash-contrib-kelompok').innerText = contribKelompok.toFixed(1);
+        document.getElementById('dash-contrib-diskusi').innerText = contribDiskusi.toFixed(1);
+        document.getElementById('dash-final-score').innerText = finalScore.toFixed(1);
+
+        const gradeEl = document.getElementById('dash-final-grade');
+        if (finalScore >= 85) {
+            gradeEl.innerText = "A (Sangat Memuaskan)";
+            gradeEl.style.color = "var(--success)";
+        } else if (finalScore >= 75) {
+            gradeEl.innerText = "B (Baik)";
+            gradeEl.style.color = "var(--accent)";
+        } else if (finalScore >= 60) {
+            gradeEl.innerText = "C (Cukup)";
+            gradeEl.style.color = "var(--warning)";
+        } else {
+            gradeEl.innerText = "D/F (Kurang / Perlu Perbaikan)";
+            gradeEl.style.color = "var(--danger)";
+        }
+    }
+
+    function updateBadge(progressBarId, badgeId, total) {
+        const progressBar = document.getElementById(progressBarId);
+        const badge = document.getElementById(badgeId);
+
+        progressBar.style.width = total + '%';
+
+        if (total >= 85) {
+            progressBar.style.backgroundColor = 'var(--success)';
+            badge.style.backgroundColor = 'var(--success)';
+            badge.innerText = 'Sangat Baik (85–100)';
+        } else if (total >= 60) {
+            progressBar.style.backgroundColor = 'var(--warning)';
+            badge.style.backgroundColor = 'var(--warning)';
+            badge.innerText = 'Cukup (60–84)';
+        } else {
+            progressBar.style.backgroundColor = 'var(--danger)';
+            badge.style.backgroundColor = 'var(--danger)';
+            badge.innerText = 'Perlu Perbaikan (0–59)';
+        }
+    }
+
+    function calculateFinalGradeText(finalScore) {
+        if (finalScore >= 85) return "A (Sangat Memuaskan)";
+        if (finalScore >= 75) return "B (Baik)";
+        if (finalScore >= 60) return "C (Cukup)";
+        return "D/F (Kurang / Perlu Perbaikan)";
+    }
+
+    function simpanKeRekapKelas() {
+        const name = document.getElementById('mhs-name').value.trim();
+        const nim = document.getElementById('mhs-nim').value.trim();
+        const status = document.getElementById('mhs-status').value;
+
+        if (!name) {
+            alert("Harap isi Nama Mahasiswa terlebih dahulu di bagian atas!");
+            return;
+        }
+
+        const scoreTBCA = parseFloat(document.getElementById('tbca-total').innerText) || 0;
+        const scoreKelompok = parseFloat(document.getElementById('kelompok-total').innerText) || 0;
+        const scoreDiskusi = parseFloat(document.getElementById('diskusi-total').innerText) || 0;
+
+        const finalScore = hitungNilaiAkhirMahasiswa(status, scoreKelompok, scoreTBCA, scoreDiskusi);
+
+        const existingIndex = classRekapData.findIndex(item => item.nama.toLowerCase() === name.toLowerCase());
+
+        if (existingIndex !== -1) {
+            let item = classRekapData[existingIndex];
+            if (nim && nim !== "-") item.nim = nim;
+            item.status = status;
+            item.tbca = scoreTBCA;
+            if (scoreKelompok > 0) item.kelompok = scoreKelompok;
+            if (scoreDiskusi > 0) item.diskusi = scoreDiskusi;
+            item.finalScore = finalScore;
+            item.grade = calculateFinalGradeText(finalScore);
+
+            alert(`Data nilai "${name}" berhasil diperbarui!`);
+        } else {
+            classRekapData.push({
+                id: Date.now() + Math.random(),
+                nama: name,
+                nim: nim || "Kelompok",
+                status: status,
+                tbca: scoreTBCA,
+                kelompok: scoreKelompok,
+                diskusi: scoreDiskusi,
+                finalScore: finalScore,
+                grade: calculateFinalGradeText(finalScore)
+            });
+            alert(`Data nilai baru untuk "${name}" berhasil disimpan!`);
+        }
+
+        renderRekapTable();
+    }
+
+    function simpanBatchKelompok() {
+        const rawText = document.getElementById('batch-names').value.trim();
+        const scoreKelompok = parseFloat(document.getElementById('kelompok-total').innerText) || 0;
+
+        if (!rawText) {
+            alert("Harap masukkan nama-nama anggota kelompok!");
+            return;
+        }
+
+        const lines = rawText.split('\n').map(l => l.trim()).filter(l => l !== "");
+        if (lines.length === 0) return;
+
+        lines.forEach((line) => {
+            let nama = line;
+            let nim = document.getElementById('mhs-nim').value.trim() || "Kelompok";
+
+            if (line.includes("-")) {
+                const parts = line.split("-");
+                nama = parts[0].trim();
+                nim = parts[1].trim();
+            }
+
+            const existingIndex = classRekapData.findIndex(item => item.nama.toLowerCase() === nama.toLowerCase());
+
+            if (existingIndex !== -1) {
+                let item = classRekapData[existingIndex];
+                item.kelompok = scoreKelompok;
+                item.finalScore = hitungNilaiAkhirMahasiswa(item.status, item.kelompok, item.tbca, item.diskusi);
+                item.grade = calculateFinalGradeText(item.finalScore);
+            } else {
+                const finalScore = hitungNilaiAkhirMahasiswa("NON_SAMPLED", scoreKelompok, 0, 0);
+                classRekapData.push({
+                    id: Date.now() + Math.random(),
+                    nama: nama,
+                    nim: nim,
+                    status: "NON_SAMPLED",
+                    tbca: 0,
+                    kelompok: scoreKelompok,
+                    diskusi: 0,
+                    finalScore: finalScore,
+                    grade: calculateFinalGradeText(finalScore)
+                });
+            }
+        });
+
+        renderRekapTable();
+        alert(`Nilai kelompok (${scoreKelompok}) berhasil disimpan/diperbarui untuk ${lines.length} anggota!`);
+    }
+
+    function renderRekapTable() {
+        const tbody = document.getElementById('tbody-rekap');
+        if (classRekapData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:#a0aec0;">Belum ada data nilai tersimpan.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = classRekapData.map((item, index) => {
+            const isSampled = item.status === "SAMPLED";
+            
+            const statusBadge = isSampled 
+                ? `<span class="status-badge status-sampled">Uji Lisan</span>` 
+                : `<span class="status-badge status-nonsampled">Non-Sampling</span>`;
+            
+            // Mengatur tampilan strip (-) jika komponen tidak digunakan
+            const displayTBCA = isSampled ? item.tbca : "-";
+            const displayDiskusi = isSampled ? "-" : item.diskusi;
+
+            return `
+            <tr>
+                <td>${index + 1}</td>
+                <td><strong>${item.nama}</strong></td>
+                <td>${statusBadge}</td>
+                <td>${displayTBCA}</td>
+                <td>${item.kelompok}</td>
+                <td>${displayDiskusi}</td>
+                <td><strong>${item.finalScore.toFixed(1)}</strong></td>
+                <td>${item.grade}</td>
+                <td><button style="color:red; background:none; border:1px solid red; border-radius:4px; cursor:pointer;" onclick="deleteRekapItem(${item.id})">Hapus</button></td>
+            </tr>
+            `;
+        }).join('');
+    }
+
+    function deleteRekapItem(id) {
+        classRekapData = classRekapData.filter(item => item.id !== id);
+        renderRekapTable();
+    }
+
+    function exportToCSV() {
+        if (classRekapData.length === 0) {
+            alert("Belum ada data nilai tersimpan!");
+            return;
+        }
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "No,Nama Mahasiswa,NIM / Kelompok,Status Uji,Nilai T-BCA,Nilai Kelompok,Nilai Diskusi,Nilai Akhir,Grade\n";
+
+        classRekapData.forEach((item, index) => {
+            const isSampled = item.status === "SAMPLED";
+            let row = [
+                index + 1,
+                `"${item.nama}"`,
+                `"${item.nim}"`,
+                `"${item.status}"`,
+                isSampled ? item.tbca : "-",
+                item.kelompok,
+                isSampled ? "-" : item.diskusi,
+                item.finalScore.toFixed(1),
+                `"${item.grade}"`
+            ].join(",");
+            csvContent += row + "\n";
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Rekap_Nilai_Kelas_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function resetForm() {
+        if (confirm("Reset seluruh form input saat ini?")) {
+            document.getElementById("mhs-name").value = "";
+            document.getElementById("mhs-nim").value = "";
+            document.getElementById("batch-names").value = "";
+            document.getElementById("mhs-status").value = "SAMPLED";
+            document.querySelectorAll('input[type="number"]').forEach(input => input.value = 0);
+            calculateTBCA();
+            calculateKelompok();
+            calculateDiskusi();
+            resetTimer();
+        }
+    }
+</script>
+
+</body>
+</html>
